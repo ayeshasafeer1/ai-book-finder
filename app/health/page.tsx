@@ -1,8 +1,13 @@
 export default function HealthPage() {
     return (
-      <main>
-        <h1>Health Check</h1>
-        <p>Health check data will appear here.</p>
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+        <h1 className="text-3xl font-bold sm:text-4xl">
+          Health Check
+        </h1>
+  
+        <p className="mt-3 text-[var(--muted)]">
+          Health check data will appear here.
+        </p>
       </main>
     );
   }

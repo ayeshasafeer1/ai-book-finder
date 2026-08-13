@@ -1,8 +1,13 @@
 export default function BookDetailsPage() {
     return (
-      <main>
-        <h1>Book Details</h1>
-        <p>Book details will appear here.</p>
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+        <h1 className="text-3xl font-bold sm:text-4xl">
+          Book Details
+        </h1>
+  
+        <p className="mt-3 text-[var(--muted)]">
+          Book details will appear here.
+        </p>
       </main>
     );
   }
