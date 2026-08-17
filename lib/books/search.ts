@@ -14,11 +14,16 @@ export type BookAuthor = {
     };
   };
   
-  type GutendexResponse = {
-    count: number;
-    next: string | null;
-    previous: string | null;
-    results: Book[];
+  type OpenLibraryDoc = {
+    key?: string;
+    title?: string;
+    author_name?: string[];
+    cover_i?: number;
+  };
+  
+  type OpenLibraryResponse = {
+    numFound: number;
+    docs: OpenLibraryDoc[];
   };
   
   export async function searchBooks(query: string): Promise<Book[]> {
@@ -29,29 +34,61 @@ export type BookAuthor = {
     }
   
     const response = await fetch(
-        `https://gutendex.com/books/?search=${encodeURIComponent(trimmedQuery)}`,
-        {
-          headers: {
-            "User-Agent": "AI-Book-Finder/1.0",
-            Accept: "application/json",
-          },
-          next: {
-            revalidate: 300,
-          },
-        }
-      );
-      if (!response.ok) {
-        const errorText = await response.text();
-      
-        throw new Error(
-          `Book search failed: ${response.status} ${response.statusText} - ${errorText}`
-        );
+      `https://openlibrary.org/search.json?q=${encodeURIComponent(
+        trimmedQuery
+      )}&limit=12`,
+      {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "AI-Book-Finder/1.0",
+        },
+        next: {
+          revalidate: 300,
+        },
       }
+    );
   
-    const data: GutendexResponse = await response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
   
-    return data.results;
+      throw new Error(
+        `Book search failed: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+  
+    const data: OpenLibraryResponse = await response.json();
+  
+    return data.docs
+      .filter((book) => book.key && book.title)
+      .map((book) => {
+        const numericId = Number(book.key!.replace("/works/", ""));
+  
+        return {
+          id: Number.isNaN(numericId) ? Math.abs(hashString(book.key!)) : numericId,
+          title: book.title!,
+          authors: (book.author_name ?? []).map((name) => ({
+            name,
+          })),
+          formats: book.cover_i
+            ? {
+                "image/jpeg": `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`,
+              }
+            : {},
+        };
+      });
   }
+  
+  function hashString(value: string): number {
+    let hash = 0;
+  
+    for (let i = 0; i < value.length; i++) {
+      hash = (hash << 5) - hash + value.charCodeAt(i);
+      hash |= 0;
+    }
+  
+    return Math.abs(hash);
+  }
+  
   export async function findBookByTitleAndAuthor(
     title: string,
     author: string
@@ -87,4 +124,3 @@ export type BookAuthor = {
   
     return exactMatch ?? null;
   }
-  
