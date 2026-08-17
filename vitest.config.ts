@@ -1,18 +1,17 @@
 import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
-
   resolve: {
     alias: {
-      "@": new URL("./", import.meta.url).pathname,
+      "@": path.resolve(__dirname, "."),
     },
   },
 
   test: {
     environment: "jsdom",
-    globals: true,
-    setupFiles: "./vitest.setup.ts",
+    setupFiles: ["./vitest.setup.ts"],
+    pool: "forks",
+    maxWorkers: 1,
   },
 });

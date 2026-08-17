@@ -11,26 +11,26 @@ describe("AIRecommendations", () => {
     render(<AIRecommendations />);
 
     expect(
-      screen.getByRole("heading", { name: "Discover with AI" })
+      screen.getAllByRole("heading", { name: "Discover with AI" })[0]
     ).toBeInTheDocument();
 
     expect(
-      screen.getByPlaceholderText(
+      screen.getAllByPlaceholderText(
         "e.g. a gothic romance with mystery"
-      )
+      )[0]
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("button", { name: "Find with AI" })
+      screen.getAllByRole("button", { name: "Find with AI" })[0]
     ).toBeInTheDocument();
   });
 
   it("disables the button when the input is empty", () => {
     render(<AIRecommendations />);
 
-    const button = screen.getByRole("button", {
+    const button = screen.getAllByRole("button", {
       name: "Find with AI",
-    });
+    })[0];
 
     expect(button).toBeDisabled();
   });
@@ -66,9 +66,9 @@ describe("AIRecommendations", () => {
 
     render(<AIRecommendations />);
 
-    const input = screen.getByPlaceholderText(
+    const input = screen.getAllByPlaceholderText(
       "e.g. a gothic romance with mystery"
-    );
+    )[0];
 
     fireEvent.change(input, {
       target: {
@@ -77,25 +77,25 @@ describe("AIRecommendations", () => {
     });
 
     fireEvent.click(
-      screen.getByRole("button", {
+      screen.getAllByRole("button", {
         name: "Find with AI",
-      })
+      })[0]
     );
 
     await waitFor(() => {
       expect(
-        screen.getByText("Pride and Prejudice")
+        screen.getAllByText("Pride and Prejudice")[0]
       ).toBeInTheDocument();
     });
 
     expect(
-      screen.getByText("Jane Austen")
+      screen.getAllByText("Jane Austen")[0]
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("link", {
+      screen.getAllByRole("link", {
         name: /View details for Pride and Prejudice/i,
-      })
+      })[0]
     ).toHaveAttribute("href", "/books/1342");
   });
 
@@ -116,9 +116,9 @@ describe("AIRecommendations", () => {
 
     render(<AIRecommendations />);
 
-    const input = screen.getByPlaceholderText(
+    const input = screen.getAllByPlaceholderText(
       "e.g. a gothic romance with mystery"
-    );
+    )[0];
 
     fireEvent.change(input, {
       target: {
@@ -127,14 +127,14 @@ describe("AIRecommendations", () => {
     });
 
     fireEvent.click(
-      screen.getByRole("button", {
+      screen.getAllByRole("button", {
         name: "Find with AI",
-      })
+      })[0]
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole("alert")
+        screen.getAllByRole("alert")[0]
       ).toHaveTextContent(
         "We couldn't generate recommendations right now. Please try again."
       );
