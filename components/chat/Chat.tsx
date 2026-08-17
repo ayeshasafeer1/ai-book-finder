@@ -111,8 +111,19 @@ const {
   </button>
 )}
 {error && (
-  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-    Something went wrong. Please try again.
+  <div
+    role="alert"
+    className="flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <span>Something went wrong. Please try again.</span>
+
+    <button
+      type="button"
+      onClick={() => window.location.reload()}
+      className="self-start rounded-lg border border-red-300 px-3 py-2 font-medium hover:bg-red-100 sm:self-auto"
+    >
+      Try again
+    </button>
   </div>
 )}
          <form onSubmit={handleSubmit} className="flex w-full gap-2">
