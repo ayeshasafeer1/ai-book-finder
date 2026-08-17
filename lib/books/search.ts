@@ -31,6 +31,10 @@ export type BookAuthor = {
     const response = await fetch(
         `https://gutendex.com/books/?search=${encodeURIComponent(trimmedQuery)}`,
         {
+          headers: {
+            "User-Agent": "AI-Book-Finder/1.0",
+            Accept: "application/json",
+          },
           next: {
             revalidate: 300,
           },

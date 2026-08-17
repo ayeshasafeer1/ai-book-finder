@@ -49,13 +49,17 @@ describe("searchBooks", () => {
     expect(result).toEqual(mockBooks);
 
     expect(fetch).toHaveBeenCalledWith(
-      "https://gutendex.com/books/?search=Pride%20and%20Prejudice",
-      {
-        next: {
-          revalidate: 300,
-        },
-      }
-    );
+        "https://gutendex.com/books/?search=Pride%20and%20Prejudice",
+        {
+          headers: {
+            "User-Agent": "AI-Book-Finder/1.0",
+            Accept: "application/json",
+          },
+          next: {
+            revalidate: 300,
+          },
+        }
+      );
   });
 
   it("throws an error when the API request fails", async () => {
