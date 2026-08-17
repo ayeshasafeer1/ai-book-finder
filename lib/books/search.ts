@@ -36,9 +36,13 @@ export type BookAuthor = {
           },
         }
       );
-    if (!response.ok) {
-      throw new Error("Book search failed");
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+      
+        throw new Error(
+          `Book search failed: ${response.status} ${response.statusText} - ${errorText}`
+        );
+      }
   
     const data: GutendexResponse = await response.json();
   
