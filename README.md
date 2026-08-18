@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Book Finder
 
-## Getting Started
+An AI-enhanced book discovery application built with Next.js, TypeScript, Tailwind CSS, Open Library, and Google Gemini.
 
-First, run the development server:
+## Live Demo
+
+https://ai-book-finder-nu.vercel.app
+
+## Features
+
+* Search for books using the Open Library API
+* Browse book covers, titles, and authors
+* View detailed book information
+* AI-powered book recommendations
+* Streaming AI chat experience
+* Favorites page
+* Responsive interface for desktop and mobile
+* Accessible interactive components
+* Health-check endpoint
+* Automated tests with Vitest
+* Production deployment with Vercel
+
+## Tech Stack
+
+* Next.js 16
+* React
+* TypeScript
+* Tailwind CSS
+* Google Gemini
+* Open Library API
+* Vitest
+* Vercel
+
+## Architecture
+
+The application uses Next.js App Router with Server Components by default and Client Components where interactivity is required.
+
+API routes handle search, AI recommendations, streaming chat, and application health checks.
+
+## Testing
+
+The project includes automated tests covering:
+
+* AI recommendation UI
+* Book search functionality
+* Book matching by title and author
+* API failure handling
+* Health-check functionality
+
+Run the test suite with:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test -- --run
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Production Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To verify the production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+API credentials are stored in environment variables and are not committed to the repository.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env.local` file locally and add the required API credentials.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+The application is deployed to Vercel.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Production URL:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+https://ai-book-finder-nu.vercel.app
+
+## Project Goals
+
+This project demonstrates production-oriented frontend development combined with AI integration, including API integration, streaming responses, responsive UI, accessibility considerations, automated testing, error handling, and deployment.
