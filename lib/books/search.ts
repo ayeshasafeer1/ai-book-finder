@@ -3,7 +3,7 @@ export type BookAuthor = {
   };
   
   export type Book = {
-    id: number;
+    id: string;
     title: string;
     authors: BookAuthor[];
     summaries?: string[];
@@ -60,33 +60,18 @@ export type BookAuthor = {
   
     return data.docs
       .filter((book) => book.key && book.title)
-      .map((book) => {
-        const numericId = Number(book.key!.replace("/works/", ""));
-  
-        return {
-          id: Number.isNaN(numericId) ? Math.abs(hashString(book.key!)) : numericId,
-          title: book.title!,
-          authors: (book.author_name ?? []).map((name) => ({
-            name,
-          })),
-          formats: book.cover_i
-            ? {
-                "image/jpeg": `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`,
-              }
-            : {},
-        };
-      });
-  }
-  
-  function hashString(value: string): number {
-    let hash = 0;
-  
-    for (let i = 0; i < value.length; i++) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0;
-    }
-  
-    return Math.abs(hash);
+      .map((book) => ({
+        id: book.key!.replace("/works/", ""),
+        title: book.title!,
+        authors: (book.author_name ?? []).map((name) => ({
+          name,
+        })),
+        formats: book.cover_i
+          ? {
+              "image/jpeg": `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`,
+            }
+          : {},
+      }));
   }
   
   export async function findBookByTitleAndAuthor(

@@ -42,7 +42,7 @@ describe("searchBooks", () => {
 
     expect(result).toEqual([
       {
-        id: expect.any(Number),
+        id: "OL123W",
         title: "Pride and Prejudice",
         authors: [{ name: "Jane Austen" }],
         formats: {

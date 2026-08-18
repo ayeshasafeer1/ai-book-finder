@@ -1,20 +1,18 @@
 import Link from "next/link";
-type Author = {
-  name: string;
+
+type OpenLibraryWork = {
+  title?: string;
+  description?: string | { value: string };
+  subjects?: string[];
+  covers?: number[];
 };
 
-type Book = {
-  id: number;
-  title: string;
-  authors: Author[];
-  summaries?: string[];
-  subjects?: string[];
-  formats?: {
-    ["image/jpeg"]?: string;
-    ["text/html"]?: string;
-  };
-  };
-
+type OpenLibraryEdition = {
+  authors?: {
+    name?: string;
+  }[];
+  covers?: number[];
+};
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -23,15 +21,67 @@ type Props = {
 export default async function BookDetailsPage({ params }: Props) {
   const { id } = await params;
 
-  let book: Book | null = null;
+  let book: {
+    title: string;
+    authors: string[];
+    description?: string;
+    subjects: string[];
+    cover?: string;
+  } | null = null;
 
   try {
-    const response = await fetch(`https://gutendex.com/books/${id}`);
+    const [workResponse, editionResponse] = await Promise.all([
+      fetch(`https://openlibrary.org/works/${id}.json`, {
+        headers: {
+          Accept: "application/json",
+        },
+        next: {
+          revalidate: 300,
+        },
+      }),
+      fetch(`https://openlibrary.org/works/${id}/editions.json?limit=1`, {
+        headers: {
+          Accept: "application/json",
+        },
+        next: {
+          revalidate: 300,
+        },
+      }),
+    ]);
 
-    if (response.ok) {
-      book = await response.json();
+    if (workResponse.ok) {
+      const work: OpenLibraryWork = await workResponse.json();
+
+      let edition: OpenLibraryEdition | null = null;
+
+      if (editionResponse.ok) {
+        const editionData = await editionResponse.json();
+        edition = editionData.entries?.[0] ?? null;
+      }
+
+      const description =
+        typeof work.description === "string"
+          ? work.description
+          : work.description?.value;
+
+      const coverId =
+        work.covers?.[0] ?? edition?.covers?.[0];
+
+      book = {
+        title: work.title ?? "Untitled",
+        authors:
+          edition?.authors
+            ?.map((author) => author.name)
+            .filter((name): name is string => Boolean(name)) ?? [],
+        description,
+        subjects: work.subjects ?? [],
+        cover: coverId
+          ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+          : undefined,
+      };
     }
-  } catch {
+  } catch (error) {
+    console.error("Book details error:", error);
     book = null;
   }
 
@@ -50,15 +100,16 @@ export default async function BookDetailsPage({ params }: Props) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
       <Link
-  href="/search"
-  className="mb-8 inline-block rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
->
-  ← Back to search
-</Link>
+        href="/search"
+        className="mb-8 inline-block rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+      >
+        ← Back to search
+      </Link>
+
       <div className="grid gap-8 md:grid-cols-[240px_1fr]">
-        {book.formats?.["image/jpeg"] ? (
+        {book.cover ? (
           <img
-            src={book.formats["image/jpeg"]}
+            src={book.cover}
             alt={`Cover of ${book.title}`}
             className="w-full rounded-xl object-cover"
           />
@@ -80,30 +131,31 @@ export default async function BookDetailsPage({ params }: Props) {
 
           {book.authors.length > 0 && (
             <p className="mt-3 text-lg text-[var(--muted)]">
-              {book.authors.map((author) => author.name).join(", ")}
+              {book.authors.join(", ")}
             </p>
           )}
-          {book.formats?.["text/html"] && (
-  <a
-    href={book.formats["text/html"]}
-    target="_blank"
-    rel="noopener noreferrer"
-className="mt-6 inline-block rounded-lg bg-white px-5 py-3 font-medium text-[var(--foreground)] border border-gray-300 shadow-sm hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--foreground)] focus:ring-offset-2 transition-all"
-  >
-    Read Online
-  </a>
-)}
+         <a
+  href={`https://openlibrary.org/works/${id}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="mt-6 inline-block rounded-lg border border-gray-300 px-5 py-3 font-medium hover:bg-gray-50"
+>
+  Read Online
+</a>
 
-          {book.summaries?.[0] && (
+          {book.description && (
             <section className="mt-8">
-              <h2 className="text-xl font-semibold">About this book</h2>
+              <h2 className="text-xl font-semibold">
+                About this book
+              </h2>
+
               <p className="mt-3 leading-7 text-[var(--muted)]">
-                {book.summaries[0]}
+                {book.description}
               </p>
             </section>
           )}
 
-          {book.subjects && book.subjects.length > 0 && (
+          {book.subjects.length > 0 && (
             <section className="mt-8">
               <h2 className="text-xl font-semibold">Subjects</h2>
 
